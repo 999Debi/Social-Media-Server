@@ -42,8 +42,8 @@ app.use(bodyparser.json({ limit: "30mb", extended: true }));
 app.use(bodyparser.urlencoded({ limit: "30mb", extended: true }));
 app.use(cors());
 
-// var publicDir = path.join(__dirname, "/public");
-// app.use(express.static(publicDir));
+var publicDir = path.join(__dirname, "/public");
+app.use(express.static(publicDir));
 // app.use(express.static(path.join(__dirname, "./clients/build")));
 
 //file storag
@@ -80,7 +80,7 @@ app.get("/", function (request, response) {
 app.use(errorHandlerMiddleware);
 app.use(notFoundMiddleware);
 
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3005;
 
 const start = async () => {
   try {
