@@ -1,6 +1,6 @@
-const { StatusCodes } = require("http-status-codes");
-const user = require("../model/userSchema");
-const {mongoose}=require ('mongoose')
+import  { StatusCodes } from "http-status-codes";
+import  user  from "../model/userSchema.js";
+import  {mongoose} from 'mongoose';
 
 const getuser = async (req, res) => {
   const { userfriendid} = req.params;
@@ -20,8 +20,8 @@ const getuserfriend = async (req, res) => {
   );
 
   const formattedfriend = friends.map(
-    ({ _id, firstname, lastname, location, picturepath }) => {
-      return { _id, firstname, lastname, location, picturepath };
+    ({ _id, firstname, lastname, location, avatar }) => {
+      return { _id, firstname, lastname, location, avatar };
     }
   );
 
@@ -33,15 +33,15 @@ const sendFriend = async (req, res) => {
   const { id, friendid } = req.params;
   const {
     _id: userid,
-    picturepath,
+    avatar,
     firstname,
     lastname,
   } = await user.findById(id);
   const friend = await user.findById(friendid);
-  const arr = [userid, picturepath, firstname, lastname];
+  const arr = [userid, avatar, firstname, lastname];
   let isDuplicate = false;
   friend.requestedFriend.map((ele) => {
-    if (ele[0] === userid && ele[1] === picturepath) {
+    if (ele[0] === userid && ele[1] === avatar) {
       isDuplicate = true;
     }
   });
@@ -153,7 +153,7 @@ const {requestedFriend}=frienduser;
 res.status(StatusCodes.OK).json({ msg: "Canceled" });
 }
 const updatePic= async(req,res)=>{
-
+  
   res.status(StatusCodes.OK).json({msg:"Profile Picture Updated"})
 }
 
@@ -169,7 +169,7 @@ const alluser = await user.find({
 res.status(StatusCodes.OK).json(alluser);
 }
 
-module.exports = {
+export  {
   getuser,
   getuserfriend,
   // addremovefriend,

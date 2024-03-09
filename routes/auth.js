@@ -1,16 +1,17 @@
 
-const {Login,updateUser}=require('../controler/auth');
-const verifytoken = require("../middleware/auth");
+import {Login} from "../controler/auth.js";
 
 
-const express=require('express');
+// import verifytoken from "../middleware/auth.js";
+
+import express from 'express';
+
 const router=express.Router();
 
 
 
   router.post("/login", Login);
-  router.patch("/updateUser",updateUser)
+  // router.post("/updateUser",updateUser)
 
 
-module.exports=router;
-
+ export default router;

@@ -3,4 +3,4 @@ class CustomAPIError extends Error {
     super(meassage);
   }
 }
-module.exports=CustomAPIError;
+export default CustomAPIError;

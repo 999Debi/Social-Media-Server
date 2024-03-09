@@ -1,4 +1,4 @@
-const mongoose=require('mongoose');
+import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
@@ -24,32 +24,32 @@ const userSchema = new mongoose.Schema(
       type: String,
       require: true,
     },
-    picturepath: {
-      type: String,
-      default: "DefaultProfile.png",
-    },
+    
     friends: {
-      type: Array, // array of user friends_ids      
+      type: Array, // array of user friends_ids
       default: [],
     },
     requestedFriend: {
       type: Array,
       default: [],
     },
-    location: String,
+
+    avatar:String,
+
+    avatarPublicId:String,
 
     About: {
       type: Object,
       default: {
-         Graduationyear: "" ,
-         Specialization: "" ,
-         Skills: "" ,
-         Work:"",Clubs:"",Hobbies:""
-      }
+        Graduationyear: "",
+        Specialization: "",
+        Skills: "",
+        Work: "",
+        Clubs: "",
+      },
     },
   },
   { timestamps: true }
 );
 const user = mongoose.model("user", userSchema);
-module
-.exports=user;
+export default user;

@@ -1,50 +1,72 @@
-require("dotenv").config();
+import dotenv from "dotenv";
+dotenv.config();
 
-require("express-async-errors");
+import "express-async-errors";
 
+import cloudinary from "cloudinary";
+import { promises as fs } from "fs";
 
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUD_API_KEY,
+  api_secret: process.env.CLOUD_API_SECRET,
+});
 
 // npm package
-const helmet = require("helmet");
-const cors = require("cors");
-const multer = require("multer");
-const morgan = require("morgan");
-const bodyparser = require("body-parser");
+import helmet from "helmet";
 
-const path=require("path");
-const express = require("express");
+import cors from "cors";
+import multer from "multer";
+import morgan from "morgan";
+import bodyParser from "body-parser";
+
+
+import express from "express";
 const app = express();
 
-const connectDB = require("./db/connect");
+import connectDB from "./db/connect.js";
 
 //router import
-const authrouter = require("./routes/auth");
-const userrouter = require("./routes/users");
-const postrouter = require("./routes/posts");
+import authrouter from "./routes/auth.js";
+import userrouter from "./routes/users.js";
+import postrouter from "./routes/posts.js";
+
 
 //controlers import
-const { createpost } = require("./controler/posts");
-const { Register } = require("./controler/auth");
-const { updatePic } = require("./controler/user");
+import { createpost } from "./controler/posts.js";
+import { Register ,updateUser} from "./controler/auth.js";
 
-//middleware 
-const verifytoken = require("./middleware/auth");
-const errorHandlerMiddleware =require('./middleware/error-handler');
-const notFoundMiddleware=require('./middleware/not-found')
+
+//middleware
+import verifytoken from "./middleware/auth.js";
+import errorHandlerMiddleware from "./middleware/error-handler.js";
+import notFoundMiddleware from "./middleware/not-found.js";
+
 
 // extra packages
 app.use(express.json());
 app.use(helmet());
-app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" })); 
+app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 
 app.use(morgan("common"));
-app.use(bodyparser.json({ limit: "30mb", extended: true }));
-app.use(bodyparser.urlencoded({ limit: "30mb", extended: true }));
+app.use(bodyParser.json({ limit: "30mb", extended: true }));
+app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 app.use(cors());
+
+
+import { dirname } from "path";
+import { fileURLToPath } from "url";
+import path from "path";
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 var publicDir = path.join(__dirname, "/public");
 app.use(express.static(publicDir));
-// app.use(express.static(path.join(__dirname, "./clients/build")));
+
+
+
+
+
+
 
 //file storag
 const storage = multer.diskStorage({
@@ -57,12 +79,9 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-
-
-
 //  Routes with files
 app.post("/auth/register", upload.single("picture"), Register);
-app.post("/user/updatepic", verifytoken, upload.single("picture"), updatePic);
+app.post("/auth/updateUser", verifytoken, upload.single("picture"), updateUser);
 
 app.post("/posts", verifytoken, upload.single("picture"), createpost);
 
@@ -71,16 +90,14 @@ app.use("/auth", authrouter);
 app.use("/users", userrouter);
 app.use("/posts", postrouter);
 
-
 app.get("/", function (request, response) {
   response.send("hello");
 });
 
-
 app.use(errorHandlerMiddleware);
 app.use(notFoundMiddleware);
 
-const port = process.env.PORT || 3005;
+const port = process.env.PORT || 3006;
 
 const start = async () => {
   try {

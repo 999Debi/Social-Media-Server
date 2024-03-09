@@ -1,8 +1,15 @@
-const { StatusCodes } = require("http-status-codes");
-const bcrypt = require("bcrypt");
-const user = require("../model/userSchema");
-const jwt = require("jsonwebtoken");
-const { BadRequestError, UnAuthenticatedError } = require("../error/index");
+import {
+  StatusCodes
+} from "http-status-codes";
+
+import bcrypt from "bcrypt";
+import user from "../model/userSchema.js";
+import posts from "../model/postSchema.js"
+import jwt from "jsonwebtoken";
+import { BadRequestError, UnAuthenticatedError } from "../error/index.js";
+
+import cloudinary from "cloudinary";
+import { promises as fs } from "fs";
 
 const Register = async (req, res) => {
   const { firstname, lastname, email, password, Graduationyear, Stream } =
@@ -22,7 +29,7 @@ const Register = async (req, res) => {
     Skills: "",
     Work: "",
     Clubs: "",
-    Hobbies: "",
+  
   };
 
   const newuser = new user({
@@ -56,23 +63,44 @@ const Login = async (req, res) => {
 };
 
 const updateUser = async (req, res) => {
-  const { id, about, picturepath } = req.body;
+  const { id, about  } = req.body;
 
   const User = await user.findOne({ _id: id });
+  const post=await posts.find({userid: id});
+// console.log(post);
+console.log(typeof post);
 
- 
 
-  User.picturepath = picturepath;
+  // console.log(req.body);
+  if (req.file) {
+    const response = await cloudinary.v2.uploader.upload(req.file.path); 
 
-  User.About = { ...about };
+    await fs.unlink(req.file.path);
+    // await Promise.all(post.map((singlepost) => {singlepost.useravatar = response.secure_url}));
+  
+  await posts.updateMany({ userid: id }, { useravatar: response.secure_url });
+  
+      User.avatar = response.secure_url;
+      User.avatarPublicId = response.public_id;
+  
+  }
 
+  // const updateUser=await User.fin/
+  // if (req.file && public_id existed before ) {
+  //   await cloudinary.v2.uploader.destroy(newUser.avatarPublicId);
+  // }
+
+
+// console.log(JSON.parse(about));
+const updatedAbout = JSON.parse(about);
+console.log( updatedAbout);
+  User.About = updatedAbout;
+// console.log(User.About);
   await User.save();
-
-  res.status(StatusCodes.OK).json({msg:"Profile Updated"});
+// console.log(User);
+  res
+    .status(StatusCodes.OK)
+    .json({ avatar:User.avatar ,about});
 };
 
-module.exports = {
-  Login,
-  Register,
-  updateUser,
-};
+export { Register, Login, updateUser};

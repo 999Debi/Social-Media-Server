@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const postSchema = new mongoose.Schema(
   {
@@ -15,9 +15,13 @@ const postSchema = new mongoose.Schema(
       required: true,
     },
     location: String,
+
     description: String,
-    picturepath: String,
-    userpicturepath: String,
+  
+    useravatar:String,
+    avatar: String,
+    avatarPublicId: String,
+    
     likes: {
       //it is an object
       type: Map,
@@ -25,10 +29,10 @@ const postSchema = new mongoose.Schema(
     },
     comments: {
       type: Array,
-      default: [],//object,array of comment of that id 
+      default: [], //object,array of comment of that id
     },
   },
   { timestamps: true }
-  );
-  const post=mongoose.model('post',postSchema);
-  module.exports=post;
+);
+const post = mongoose.model("post", postSchema);
+export default post;

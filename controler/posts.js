@@ -1,20 +1,34 @@
-const post = require("../model/postSchema");
-const user = require("../model/userSchema");
-const mongoose = require("mongoose");
-const { StatusCodes } = require("http-status-codes");
+import post from "../model/postSchema.js";
+import user from "../model/userSchema.js";
+import { StatusCodes }  from "http-status-codes";
+
+import cloudinary from "cloudinary";
+import { promises as fs } from "fs";
 
 const createpost = async (req, res) => {
-  const { userid, description, picturepath } = req.body;
+  const { userid, description ,useravatar} = req.body;
 
-  const curuser = await user.findById(userid); //findById(id
+  const curuser = await user.findById(userid); 
+
+    
+          // multer add file propety to request object if client uploaded image i.e req.file exist
+          // console.log(picture);
+          // console.log(picturepath);
+      console.log(req.file);
+      const response = await cloudinary.v2.uploader.upload(req.file.path);
+      await fs.unlink(req.file.path); //Delete local uploaded image after uploading it to cloud
+
+        
+
   const newpost = new post({
     userid,
     firstname: curuser.firstname,
     lastname: curuser.lastname,
     location: curuser.location,
     description,
-    userpicturepath: curuser.picturepath,
-    picturepath,
+    useravatar: useravatar,
+    avatar: response.secure_url,
+    avatarPublicId: response.public_id,
     likes: {},
     comments: [],
   });
@@ -63,7 +77,7 @@ const commentpost = async (req, res) => {
   const { userid, comment } = req.body;
   // const commentId = new mongoose.Types.ObjectId(userid);
   const commenteduser = await user.findById(userid);
-  const commentUserpath = commenteduser.picturepath;
+  const commentUserpath = commenteduser.avatar;
   const commentUsername = commenteduser.firstname;
   const postuser = await post.findById(id);
   const arr = [];
@@ -84,11 +98,8 @@ const commentpost = async (req, res) => {
   res.status(StatusCodes.OK).json(userpost);
 };
 
-module.exports = {
-  createpost,
+export {  createpost,
   getfeedposts,
   getuserposts,
   likepost,
-  commentpost,
-
-};
+  commentpost};
