@@ -4,7 +4,6 @@ dotenv.config();
 import "express-async-errors";
 
 import cloudinary from "cloudinary";
-import { promises as fs } from "fs";
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -53,14 +52,6 @@ app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 app.use(cors());
 
-
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import path from "path";
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
-var publicDir = path.join(__dirname, "/public");
-app.use(express.static(publicDir));
 
 
 
